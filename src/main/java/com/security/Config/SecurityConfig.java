@@ -1,4 +1,5 @@
 package com.security.Config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,18 +15,9 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/", "/index.html", "/static/**").permitAll()
-                    .anyRequest().authenticated()
+                    .anyRequest().permitAll() // Permite acesso a todas as requisições
             )
-            .formLogin(formLogin ->
-                formLogin
-                    .loginPage("/login")
-                    .permitAll()
-            )
-            .logout(logout ->
-                logout
-                    .permitAll()
-            );
+            .csrf().disable(); // Desativa a proteção CSRF (Cross-Site Request Forgery)
         return http.build();
     }
 }

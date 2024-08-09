@@ -42,8 +42,12 @@ public class PedidoController {
         Pedido pedido = pedidoOptional.get();
         Produto produto = produtoOptional.get();
 
-        pedido.getItens().add(ItemPedido); // Supondo que você tenha um método para adicionar produtos ao pedido
+        ItemPedido itemPedido = new ItemPedido();
+        itemPedido.setProduto(produto);
+        itemPedido.setQuantidade(1); // Define a quantidade conforme necessário
+        itemPedido.setPreco(produto.getPreco());
 
+        pedido.getItens().add(itemPedido);
         pedidoRepository.save(pedido);
 
         return ResponseEntity.ok().build();

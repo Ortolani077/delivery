@@ -21,7 +21,7 @@ import com.security.Services.ProdutoService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/produtos")
+@RequestMapping("/produtos")
 @RequiredArgsConstructor
 public class ProdutoController {
 
