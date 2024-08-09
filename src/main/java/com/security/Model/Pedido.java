@@ -40,7 +40,19 @@ public class Pedido {
     private List<ItemPedido> itens;
 
     private boolean entrega;
+    
+    
+    public double getPreco() {
+		return preco;
+	}
 
+	public void setPreco(double preco) {
+		this.preco = preco;
+	}
+
+	private double preco;
+    
+   
     // Getters and Setters
 
     public Long getId() {

@@ -22,6 +22,8 @@ public class Cardapio {
     private Long id;
 
     private String nome;
+    
+    private String descricao;
 
     @OneToMany(mappedBy = "cardapio")
     private List<Categoria> categorias;

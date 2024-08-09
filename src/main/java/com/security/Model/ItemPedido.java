@@ -29,7 +29,19 @@ public class ItemPedido {
     private Produto produto;
 
     private int quantidade;
+    
+    
+    public double getPreco() {
+		return preco;
+	}
 
+	public void setPreco(double preco) {
+		this.preco = preco;
+	}
+
+	private double preco;
+    
+    
     // Getters and Setters
     public Long getId() {
         return id;
