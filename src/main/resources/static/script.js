@@ -24,6 +24,7 @@ $(document).ready(function () {
                         <div class="pizza-item col-md-4" data-id="${pizza.id}" data-name="${pizza.nome}" data-price="${pizza.preco}">
                             <h5>${pizza.nome}</h5>
                             <p>R$ ${pizza.preco.toFixed(2)}</p>
+                            <p>${pizza.descricao}</p>
                             <button class="btn btn-primary add-to-cart">Adicionar ao Carrinho</button>
                         </div>
                     `);
@@ -103,15 +104,17 @@ $(document).ready(function () {
     $('#checkout-form').on('submit', function (e) {
         e.preventDefault();
 
-        const clientId = 1; // Aqui você pode definir o ID automaticamente ou pegar da lógica de autenticação
-        const observacoes = $('#observacoes').val();
+        const clientName = $('#clientName').val();
+        const clientPhone = $('#clientPhone').val();
+        const clientEmail = $('#clientEmail').val();
+        const clientAddress = $('#clientAddress').val();
+        const houseNumber = $('#houseNumber').val();
+        const complement = $('#complement').val();
+        const reference = $('#reference').val();
         const deliveryOption = $('#deliveryOption').val();
         const paymentMethod = $('#paymentMethod').val();
-
-        let finalTotal = parseFloat($('#cart-total').text());
-        if (deliveryOption === 'entrega') {
-            finalTotal += deliveryFee;
-        }
+        const observacoes = $('#observacoes').val();
+        const finalTotal = parseFloat($('#final-total').text());
 
         let troco = null;
         if (paymentMethod === 'dinheiro') {
@@ -129,17 +132,17 @@ $(document).ready(function () {
             $('#change-output').hide();
         }
 
-        // Mapeia o método de pagamento para texto legível
-		const paymentMethodText = {
-		    cartao: 'Cartão de Crédito/Débito',
-		    dinheiro: 'Dinheiro',
-		    pix: 'PIX na Entrega'
-		}[paymentMethod] || 'Método de pagamento não especificado';
+        const paymentMethodText = {
+            cartao: 'Cartão de Crédito/Débito',
+            dinheiro: 'Dinheiro',
+            pix: 'PIX na Entrega'
+        }[paymentMethod] || 'Método de pagamento não especificado';
 
         const pedidoDTO = {
-            clienteId: clientId,
-            dataPedido: new Date().toISOString(),
-            status: 'Pendente',
+            emailCliente: clientEmail,
+            nomeCliente: clientName,
+            telefoneCliente: clientPhone,
+            enderecoCliente: `${clientAddress}, ${houseNumber}, ${complement}, ${reference}`,
             entrega: deliveryOption === 'entrega',
             preco: finalTotal,
             observacoes: `${observacoes} Pagamento: ${paymentMethodText}${paymentMethod === 'dinheiro' ? `; Troco a ser devolvido R$ ${troco ? troco.toFixed(2) : ''}` : ''}`,
@@ -149,12 +152,15 @@ $(document).ready(function () {
             }))
         };
 
+        console.log('Enviando pedidoDTO:', pedidoDTO);
+
         $.ajax({
             url: 'http://localhost:8081/delivery/pedidos/criar',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(pedidoDTO),
             success: function (response) {
+                console.log('Resposta do servidor:', response);
                 alert('Pedido realizado com sucesso!');
                 $('#checkoutModal').modal('hide');
                 cart = [];
@@ -176,6 +182,8 @@ $(document).ready(function () {
             },
             error: function (xhr, status, error) {
                 console.error('Erro ao realizar o pedido:', error);
+                console.log('Status:', status);
+                console.log('Resposta:', xhr.responseText);
                 alert('Ocorreu um erro ao realizar o pedido.');
             }
         });
@@ -192,8 +200,8 @@ $(document).ready(function () {
         updateFinalTotal();
     });
 
-    // Atualizar total quando a opção de entrega mudar
-    $('#deliveryOption').on('change', function () {
+    // Atualizar o total final quando o carrinho for atualizado
+    $(document).on('click', '.add-to-cart, .remove-from-cart', function () {
         updateFinalTotal();
     });
 });

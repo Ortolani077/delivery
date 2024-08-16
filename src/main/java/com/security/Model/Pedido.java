@@ -28,83 +28,87 @@ public class Pedido {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id", nullable = false)
+    @JoinColumn(name = "cliente_id")
     private User cliente;
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date dataPedido;
 
-    private String status;
-
     @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
     private List<ItemPedido> itens;
 
     private boolean entrega;
-    
-    private String observcoes;
-    
-    @Column(nullable = false)
-    private double preco;
 
-    public double getPreco() {
-        return itens.stream().mapToDouble(ItemPedido::getPreco).sum();
-    }
-    
-    public List<ItemPedido> getItens() {
-        return itens;
-    }
+    @Column(length = 500)
+    private String observacoes;
 
+    private Double preco;
+
+    // Novos campos
+    private String nomeCliente;
+    private String telefoneCliente;
+    private String enderecoCliente;
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
 	public User getCliente() {
 		return cliente;
 	}
-
 	public void setCliente(User cliente) {
 		this.cliente = cliente;
 	}
-
 	public Date getDataPedido() {
 		return dataPedido;
 	}
-
 	public void setDataPedido(Date dataPedido) {
 		this.dataPedido = dataPedido;
 	}
-
-	public String getStatus() {
-		return status;
+	public List<ItemPedido> getItens() {
+		return itens;
 	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-
-	public boolean isEntrega() {
-		return entrega;
-	}
-
-	public void setEntrega(boolean entrega) {
-		this.entrega = entrega;
-	}
-
-	public String getObservcoes() {
-		return observcoes;
-	}
-
-	public void setObservcoes(String observcoes) {
-		this.observcoes = observcoes;
-	}
-
 	public void setItens(List<ItemPedido> itens) {
 		this.itens = itens;
 	}
+	public boolean isEntrega() {
+		return entrega;
+	}
+	public void setEntrega(boolean entrega) {
+		this.entrega = entrega;
+	}
+	public String getObservacoes() {
+		return observacoes;
+	}
+	public void setObservacoes(String observacoes) {
+		this.observacoes = observacoes;
+	}
+	public Double getPreco() {
+		return preco;
+	}
+	public void setPreco(Double preco) {
+		this.preco = preco;
+	}
+	public String getNomeCliente() {
+		return nomeCliente;
+	}
+	public void setNomeCliente(String nomeCliente) {
+		this.nomeCliente = nomeCliente;
+	}
+	public String getTelefoneCliente() {
+		return telefoneCliente;
+	}
+	public void setTelefoneCliente(String telefoneCliente) {
+		this.telefoneCliente = telefoneCliente;
+	}
+	public String getEnderecoCliente() {
+		return enderecoCliente;
+	}
+	public void setEnderecoCliente(String enderecoCliente) {
+		this.enderecoCliente = enderecoCliente;
+	}
 
+
+    
 }
-

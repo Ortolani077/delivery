@@ -1,22 +1,15 @@
 package com.security.Controllers;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.security.Model.ItemPedido;
-import com.security.Model.ItemPedidoDTO;
 import com.security.Model.Pedido;
-import com.security.Model.PedidoDTO;
-import com.security.Model.Produto;
+import com.security.Model.PedidoFormDTO;
 import com.security.Model.User;
 import com.security.Repositories.PedidoRepository;
-import com.security.Repositories.ProdutoRepository;
 import com.security.Repositories.UserRepository;
 
 @RestController
@@ -27,51 +20,36 @@ public class PedidoController {
     private PedidoRepository pedidoRepository;
 
     @Autowired
-    private ProdutoRepository produtoRepository;
-
-    @Autowired
     private UserRepository userRepository;
 
     @PostMapping("/criar")
-    public ResponseEntity<String> criarPedido(@RequestBody PedidoDTO pedidoDTO) {
-        Optional<User> clienteOptional = userRepository.findById(pedidoDTO.getClienteId());
-        if (clienteOptional.isEmpty()) {
-            return ResponseEntity.badRequest().body("Cliente com ID " + pedidoDTO.getClienteId() + " não encontrado.");
+    public ResponseEntity<Pedido> criarPedido(@RequestBody PedidoFormDTO pedidoFormDTO) {
+        // Verifica se o cliente já existe pelo email
+        User cliente = userRepository.findByEmail(pedidoFormDTO.getEmailCliente());
+        if (cliente == null) {
+            // Se o cliente não existir, cria um novo
+            cliente = new User();
+            cliente.setNome(pedidoFormDTO.getNomeCliente());
+            cliente.setEmail(pedidoFormDTO.getEmailCliente());
+            cliente.setTelefone(pedidoFormDTO.getTelefoneCliente());
+            // Defina a senha aqui se necessário, caso o modelo User exija
+            cliente = userRepository.save(cliente);
         }
 
+        // Cria o pedido
         Pedido pedido = new Pedido();
-        pedido.setCliente(clienteOptional.get());
-        pedido.setDataPedido(new Date()); // Convertido de String para Date conforme necessário
-        pedido.setStatus(pedidoDTO.getStatus());
-        pedido.setEntrega(pedidoDTO.isEntrega());
+        pedido.setCliente(cliente);
+        pedido.setEnderecoCliente(pedidoFormDTO.getEnderecoCliente());
+        pedido.setEntrega(pedidoFormDTO.isEntrega());
+        pedido.setObservacoes(pedidoFormDTO.getObservacoes());
+        pedido.setPreco(pedidoFormDTO.getPreco());
+        pedido.setTelefoneCliente(pedidoFormDTO.getTelefoneCliente());
+        pedido.setDataPedido(new Date());
 
-        StringBuilder observacoes = new StringBuilder(pedidoDTO.getObservacoes());
-        if (pedidoDTO.getTroco() != null) {
-            observacoes.append(" Troco: R$ ").append(pedidoDTO.getTroco().toString());
-        }
-        pedido.setObservcoes(observacoes.toString());
+        // Salva o pedido no banco de dados
+        Pedido savedPedido = pedidoRepository.save(pedido);
 
-        // Adicionar itens ao pedido
-        List<ItemPedido> itensPedido = new ArrayList<>();
-        for (ItemPedidoDTO itemDTO : pedidoDTO.getItens()) {
-            Optional<Produto> produtoOptional = produtoRepository.findById(itemDTO.getProdutoId());
-            if (produtoOptional.isEmpty()) {
-                return ResponseEntity.badRequest().body("Produto com ID " + itemDTO.getProdutoId() + " não encontrado.");
-            }
-
-            Produto produto = produtoOptional.get();
-            ItemPedido itemPedido = new ItemPedido();
-            itemPedido.setProduto(produto);
-            itemPedido.setQuantidade(itemDTO.getQuantidade());
-            itemPedido.setPreco(produto.getPreco());
-            itemPedido.setPedido(pedido);
-
-            itensPedido.add(itemPedido);
-        }
-
-        pedido.setItens(itensPedido);
-        pedidoRepository.save(pedido);
-
-        return ResponseEntity.ok("Pedido criado com sucesso.");
+        // Retorna o pedido criado com sucesso
+        return ResponseEntity.ok(savedPedido);
     }
 }

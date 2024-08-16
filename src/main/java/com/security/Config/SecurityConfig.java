@@ -17,7 +17,7 @@ public class SecurityConfig {
                 authorizeRequests
                     .anyRequest().permitAll() // Permite acesso a todas as requisições
             )
-            .csrf().disable(); // Desativa a proteção CSRF (Cross-Site Request Forgery)
+            .csrf().disable(); // Desativa a proteção CSRF
         return http.build();
     }
 }
