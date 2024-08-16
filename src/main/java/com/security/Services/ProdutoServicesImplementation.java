@@ -2,10 +2,8 @@ package com.security.Services;
 
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.security.Model.Produto;
 import com.security.Repositories.ProdutoRepository;
 
@@ -50,11 +48,9 @@ public class ProdutoServicesImplementation implements ProdutoService {
         return produtoRepository.findAll();
     }
 
-    @Override
-    public Produto updateProduto(Produto produto) {
-        if (produto.getId() == null) {
-            throw new RuntimeException("ID do produto está nulo, informe um ID válido");
-        }
-        return produtoRepository.save(produto);
-    }
+	@Override
+	public Produto updateProduto(Produto produto) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

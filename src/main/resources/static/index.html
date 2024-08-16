@@ -19,6 +19,7 @@
 </head>
 
 <body class="background-image">
+    <!-- Botões fixos com links para redes sociais -->
     <div class="fixed-buttons">
         <button type="button" class="btn btn-img" onclick="window.open('https://www.facebook.com/profile.php?id=61553682487326', '_blank')">
             <img src="https://i.imgur.com/eciK6eU.png" alt="Facebook" width="30" height="30">
@@ -31,6 +32,7 @@
         </button>
     </div>
 
+    <!-- Cabeçalho com navegação -->
     <nav>
         <div class="nav-wrapper">
             <a href="#" class="brand-logo right">
@@ -40,8 +42,8 @@
         </div>
     </nav>
 
+    <!-- Carrossel de Imagens -->
     <div class="carousel">
-        <div><img src="servico.jpg" alt="Serviço"></div>
         <div><img src="primeiro.jpg" alt="Primeiro"></div>
         <div><img src="carrossel1.jpg" alt="Carrossel 1"></div>
         <div><img src="pizzasfundo.jpg" alt="Pizzas Fundo"></div>
@@ -53,12 +55,9 @@
         <div><img src="carrossel8.jpg" alt="Carrossel 8"></div>
     </div>
 
-    <header>
-        <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-    </header>
-
+    <!-- Botões para categorias de produtos -->
     <div class="button-container">
-        <button class="custom-btn btn-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWhoWeAre" aria-expanded="false" aria-controls="collapseWhoWeAre">
+        <button class="custom-btn btn-1" type="button" id="pizzasButton" data-bs-toggle="collapse" data-bs-target="#collapseWhoWeAre" aria-expanded="false" aria-controls="collapseWhoWeAre">
             Pizzas
         </button>
         <button class="custom-btn btn-1" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOurServices" aria-expanded="false" aria-controls="collapseOurServices">
@@ -69,10 +68,11 @@
         </button>
     </div>
 
+    <!-- Conteúdo expandido -->
     <div class="collapse expanded-content custom-collapse" id="collapseWhoWeAre">
         <div class="card card-body">
             <div id="pizzas-list">
-                <!-- Lista de pizzas será carregada aqui -->
+                <!-- A lista de pizzas será carregada aqui pelo JavaScript -->
             </div>
         </div>
     </div>
@@ -91,19 +91,112 @@
         </div>
     </div>
 
-    <div class="gallery">
-        <figure class="gallery__item"><img src="f1.jpg" class="gallery__img" alt="Image 1"></figure>
-        <figure class="gallery__item"><img src="f2.jpg" class="gallery__img" alt="Image 2"></figure>
-        <figure class="gallery__item"><img src="f3.jpg" class="gallery__img" alt="Image 3"></figure>
-        <figure class="gallery__item"><img src="f4.jpg" class="gallery__img" alt="Image 4"></figure>
-        <figure class="gallery__item"><img src="f5.jpg" class="gallery__img" alt="Image 5"></figure>
-        <figure class="gallery__item"><img src="f7.png" class="gallery__img" alt="Image 6"></figure>
-        <figure class="gallery__item"><img src="f6.jpg" class="gallery__img" alt="Image 6"></figure>
+    <!-- Carrinho de Compras -->
+    <div class="cart-container">
+        <h2>Seu Pedido</h2>
+        <div id="cart-items">
+            <!-- Lista de itens do carrinho será carregada aqui -->
+        </div>
+        <div class="cart-total">
+            Total: R$ <span id="cart-total">0.00</span>
+        </div>
+        <button class="btn btn-danger" id="clear-cart-btn">Remover Todos</button>
+        <button class="btn btn-primary" id="checkout-btn" data-bs-toggle="modal" data-bs-target="#checkoutModal">Finalizar Compras</button>
     </div>
 
-    <div class="lightbox" id="lightbox">
-        <img src="" alt="Image">
-    </div>
+	<!-- Modal de Checkout -->
+	<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="checkoutModalLabel">Finalizar Pedido</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                <form id="checkout-form">
+	                    <!-- Campos de informações do cliente -->
+	                    <div class="mb-3">
+	                        <label for="clientName" class="form-label">Nome</label>
+	                        <input type="text" class="form-control" id="clientName" required>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="clientPhone" class="form-label">Telefone</label>
+	                        <input type="text" class="form-control" id="clientPhone" required>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="clientEmail" class="form-label">Email</label>
+	                        <input type="email" class="form-control" id="clientEmail" required>
+	                    </div>
+	                    <!-- Endereço -->
+	                    <div class="mb-3">
+	                        <label for="clientAddress" class="form-label">Endereço</label>
+	                        <input type="text" class="form-control" id="clientAddress" required placeholder="Ex: Rua das Flores, Bairro Centro">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="houseNumber" class="form-label">Número da Casa</label>
+	                        <input type="text" class="form-control" id="houseNumber" required>
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="complement" class="form-label">Complemento</label>
+	                        <input type="text" class="form-control" id="complement">
+	                    </div>
+	                    <div class="mb-3">
+	                        <label for="reference" class="form-label">Referência</label>
+	                        <input type="text" class="form-control" id="reference">
+	                    </div>
+	                    <!-- Escolha entre entrega ou retirada -->
+	                    <div class="mb-3">
+	                        <label class="form-label">Opção de Entrega</label>
+	                        <select id="deliveryOption" class="form-select" required>
+	                            <option value="entrega">Entrega</option>
+	                            <option value="retirada">Retirada no Local</option>
+	                        </select>
+	                    </div>
+	                    <!-- Escolha do método de pagamento -->
+	                    <div class="mb-3">
+	                        <label class="form-label">Forma de Pagamento</label>
+	                        <select id="paymentMethod" class="form-select" required>
+	                            <option value="cartao">Cartão de Crédito/Débito</option>
+	                            <option value="dinheiro">Dinheiro</option>
+	                            <option value="pix">Pix na Entrega</option>
+	                        </select>
+	                    </div>
+	                    <!-- Campo para troco -->
+	                    <div class="mb-3" id="change-container" style="display: none;">
+	                     bel>
+	                        <input type="text" class="form-control" id="changeGiven" placeholder="Troco para R$: ">
+	                        <p id="change-output" style="display: none;">Troco a ser devolvido: R$ <span id="change"></span></p>
+	                    </div>
+	                    <div id="delivery-fee" style="display: none;">
+	                        <p>Taxa de entrega: R$ 5,00 será adicionada ao valor total.</p>
+	                    </div>
+	                    <p>Total a Pagar: R$ <span id="final-total">0.00</span></p>
+	                    <button type="submit" class="btn btn-success">Confirmar Pedido</button>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+	
+	<!-- Modal de tempo estimado de entrega -->
+	<div id="delivery-time-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="deliveryTimeModalLabel" aria-hidden="true">
+	    <div class="modal-dialog" role="document">
+	        <div class="modal-content">
+	            <div class="modal-header">
+	                <h5 class="modal-title" id="deliveryTimeModalLabel">Tempo Estimado de Entrega</h5>
+	                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	            </div>
+	            <div class="modal-body">
+	                <!-- A mensagem personalizada será inserida aqui -->
+	                <p id="deliveryTimeMessage"></p>
+	            </div>
+	            <div class="modal-footer">
+	                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+
 </body>
 
 </html>

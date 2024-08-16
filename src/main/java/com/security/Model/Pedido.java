@@ -2,8 +2,8 @@ package com.security.Model;
 
 import java.util.Date;
 import java.util.List;
-
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -41,65 +41,70 @@ public class Pedido {
 
     private boolean entrega;
     
+    private String observcoes;
     
+    @Column(nullable = false)
+    private double preco;
+
     public double getPreco() {
-		return preco;
-	}
-
-	public void setPreco(double preco) {
-		this.preco = preco;
-	}
-
-	private double preco;
+        return itens.stream().mapToDouble(ItemPedido::getPreco).sum();
+    }
     
-   
-    // Getters and Setters
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(User cliente) {
-        this.cliente = cliente;
-    }
-
-    public Date getDataPedido() {
-        return dataPedido;
-    }
-
-    public void setDataPedido(Date dataPedido) {
-        this.dataPedido = dataPedido;
-    }
-
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public List<ItemPedido> getItens() {
         return itens;
     }
 
-    public void setItens(List<ItemPedido> itens) {
-        this.itens = itens;
-    }
+	public Long getId() {
+		return id;
+	}
 
-    public boolean isEntrega() {
-        return entrega;
-    }
+	public void setId(Long id) {
+		this.id = id;
+	}
 
-    public void setEntrega(boolean entrega) {
-        this.entrega = entrega;
-    }
+	public User getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(User cliente) {
+		this.cliente = cliente;
+	}
+
+	public Date getDataPedido() {
+		return dataPedido;
+	}
+
+	public void setDataPedido(Date dataPedido) {
+		this.dataPedido = dataPedido;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public boolean isEntrega() {
+		return entrega;
+	}
+
+	public void setEntrega(boolean entrega) {
+		this.entrega = entrega;
+	}
+
+	public String getObservcoes() {
+		return observcoes;
+	}
+
+	public void setObservcoes(String observcoes) {
+		this.observcoes = observcoes;
+	}
+
+	public void setItens(List<ItemPedido> itens) {
+		this.itens = itens;
+	}
+
 }
+
