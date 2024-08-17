@@ -204,4 +204,54 @@ $(document).ready(function () {
     $(document).on('click', '.add-to-cart, .remove-from-cart', function () {
         updateFinalTotal();
     });
+
+    // Fechar modais ao clicar fora deles
+    $(document).on('click', function (event) {
+        // Verifica se o clique foi fora do modal de pizzas
+        if (!$(event.target).closest('#pizza-modal').length && !$(event.target).closest('.open-pizza-modal').length) {
+            $('#pizza-modal').modal('hide');
+        }
+
+        // Verifica se o clique foi fora do modal de bebidas
+        if (!$(event.target).closest('#bebida-modal').length && !$(event.target).closest('.open-bebida-modal').length) {
+            $('#bebida-modal').modal('hide');
+        }
+
+        // Verifica se o clique foi fora do modal de esfiha
+        if (!$(event.target).closest('#esfiha-modal').length && !$(event.target).closest('.open-esfiha-modal').length) {
+            $('#esfiha-modal').modal('hide');
+        }
+
+        if (!$(event.target).closest('#cart-container, .add-to-cart, .pizza-item').length) {
+            // Fechar o carrinho se o clique não for dentro do carrinho ou em um botão de adicionar ao carrinho
+            $('#cart-container').hide();
+        }
+
+        if (!$(event.target).closest('#deliveryOption, #paymentMethod, #change-container').length) {
+            // Fechar as listas de opções de entrega e método de pagamento se o clique for fora delas
+            $('#deliveryOption').blur();
+            $('#paymentMethod').blur();
+            $('#change-container').hide();
+        }
+    });
+
+    // Mostrar o carrinho novamente quando for atualizado
+    $(document).on('click', '.add-to-cart', function () {
+        $('#cart-container').show();
+    });
+
+    // Exibir o modal de pizzas
+    $('.open-pizza-modal').on('click', function () {
+        $('#pizza-modal').modal('show');
+    });
+
+    // Exibir o modal de bebidas
+    $('.open-bebida-modal').on('click', function () {
+        $('#bebida-modal').modal('show');
+    });
+
+    // Exibir o modal de esfihas
+    $('.open-esfiha-modal').on('click', function () {
+        $('#esfiha-modal').modal('show');
+    });
 });
