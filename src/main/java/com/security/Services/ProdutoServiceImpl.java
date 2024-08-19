@@ -8,14 +8,10 @@ import com.security.Model.Produto;
 import com.security.Repositories.ProdutoRepository;
 
 @Service
-public class ProdutoServicesImplementation implements ProdutoService {
-
-    private final ProdutoRepository produtoRepository;
+public class ProdutoServiceImpl implements ProdutoService {
 
     @Autowired
-    public ProdutoServicesImplementation(ProdutoRepository produtoRepository) {
-        this.produtoRepository = produtoRepository;
-    }
+    private ProdutoRepository produtoRepository;
 
     @Override
     public Optional<Produto> getProdutoById(Long id) {
@@ -24,18 +20,16 @@ public class ProdutoServicesImplementation implements ProdutoService {
 
     @Override
     public Produto createProduto(Produto produto) {
-        if (produto.getId() != null) {
-            throw new RuntimeException("O produto já está cadastrado");
-        }
         return produtoRepository.save(produto);
     }
 
     @Override
     public Produto updateProduto(Long id, Produto produto) {
-        if (produto.getId() == null) {
-            throw new RuntimeException("ID do produto está nulo, informe um ID válido");
+        if (produtoRepository.existsById(id)) {
+            produto.setId(id);
+            return produtoRepository.save(produto);
         }
-        return produtoRepository.save(produto);
+        return null;
     }
 
     @Override
@@ -48,9 +42,13 @@ public class ProdutoServicesImplementation implements ProdutoService {
         return produtoRepository.findAll();
     }
 
-	@Override
-	public Produto updateProduto(Produto produto) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public List<Produto> getProdutosByCategoria(Long categoriaId) {
+        return produtoRepository.findProdutosByCategoria(categoriaId);
+    }
+
+    @Override
+    public List<Object[]> getProdutosByCategoriaNative(Long categoriaId) {
+        return produtoRepository.findProdutosByCategoriaNative(categoriaId);
+    }
 }

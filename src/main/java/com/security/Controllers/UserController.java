@@ -1,12 +1,16 @@
 package com.security.Controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.security.Model.Endereco;
+import com.security.Model.EnderecoDTO;
 import com.security.Model.User;
 import com.security.Model.UserDTO;
 import com.security.Repositories.EnderecoRepository;
@@ -23,7 +27,12 @@ public class UserController {
     private EnderecoRepository enderecoRepository;
 
     @PostMapping("/criar")
-    public void createUser(@RequestBody UserDTO userDTO) {
+    @Transactional
+    public ResponseEntity<String> createUser(@RequestBody UserDTO userDTO) {
+        if (userDTO == null) {
+            return ResponseEntity.badRequest().body("Dados do usuário não fornecidos.");
+        }
+
         User user = new User();
         user.setNome(userDTO.getNome());
         user.setEmail(userDTO.getEmail());
@@ -45,5 +54,7 @@ public class UserController {
         }
 
         userRepository.save(user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body("Usuário criado com sucesso.");
     }
 }

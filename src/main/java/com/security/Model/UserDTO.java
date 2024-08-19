@@ -7,6 +7,7 @@ public class UserDTO {
     private String email;
     private String telefone;
     private List<EnderecoDTO> enderecos; // Lista de EnderecoDTO
+    private List<PedidoDTO> pedidos; // Lista de PedidoDTO
 
     // Getters e Setters
     public String getNome() {
@@ -39,5 +40,13 @@ public class UserDTO {
 
     public void setEnderecos(List<EnderecoDTO> enderecos) {
         this.enderecos = enderecos;
+    }
+
+    public List<PedidoDTO> getPedidos() {
+        return pedidos;
+    }
+
+    public void setPedidos(List<PedidoDTO> pedidos) {
+        this.pedidos = pedidos;
     }
 }

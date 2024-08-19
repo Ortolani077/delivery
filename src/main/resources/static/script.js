@@ -1,6 +1,10 @@
 $(document).ready(function () {
     const deliveryFee = 5.00;
     let cart = [];
+    let selectedFlavors = [];
+    const maxFlavors = 2;
+    const pizzaCategoriaId = 2; // Categoria para pizzas
+    const esfihaCategoriaId = 5; // Categoria para esfihas
 
     // Configuração do carrossel
     $('.carousel').slick({
@@ -12,20 +16,21 @@ $(document).ready(function () {
         dots: true,
     });
 
-    // Carregar pizzas do banco de dados
+    // Função para carregar pizzas do banco de dados filtradas por categoria
     function loadPizzasFromDB() {
         $.ajax({
-            url: '/delivery/produtos',
+            url: `/delivery/produtos/categoria/${pizzaCategoriaId}`, // URL ajustada para incluir a categoria de pizzas
             method: 'GET',
             dataType: 'json',
             success: function (pizzas) {
+                $('#pizzas-list').empty(); // Limpar lista de pizzas antes de adicionar novas
                 pizzas.forEach(pizza => {
                     $('#pizzas-list').append(`
                         <div class="pizza-item col-md-4" data-id="${pizza.id}" data-name="${pizza.nome}" data-price="${pizza.preco}">
                             <h5>${pizza.nome}</h5>
                             <p>R$ ${pizza.preco.toFixed(2)}</p>
                             <p>${pizza.descricao}</p>
-                            <button class="btn btn-primary add-to-cart">Adicionar ao Carrinho</button>
+                            <button class="btn btn-primary select-flavor">Selecionar Sabor</button>
                         </div>
                     `);
                 });
@@ -36,13 +41,85 @@ $(document).ready(function () {
         });
     }
 
+    // Função para carregar esfihas do banco de dados filtradas por categoria
+    function loadEsfihasFromDB() {
+        $.ajax({
+            url: `/delivery/produtos/categoria/${esfihaCategoriaId}`, // URL ajustada para incluir a categoria de esfihas
+            method: 'GET',
+            dataType: 'json',
+            success: function (esfihas) {
+                $('#esfihas-list').empty(); // Limpar lista de esfihas antes de adicionar novas
+                esfihas.forEach(esfiha => {
+                    $('#esfihas-list').append(`
+                        <div class="esfiha-item col-md-4" data-id="${esfiha.id}" data-name="${esfiha.nome}" data-price="${esfiha.preco}">
+                            <h5>${esfiha.nome}</h5>
+                            <p>R$ ${esfiha.preco.toFixed(2)}</p>
+                            <p>${esfiha.descricao}</p>
+                            <button class="btn btn-primary add-to-cart">Adicionar ao Carrinho</button>
+                        </div>
+                    `);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.error('Erro ao carregar as esfihas:', error);
+            }
+        });
+    }
+
+    // Carregar pizzas ao carregar a página
     loadPizzasFromDB();
 
-    // Adicionar ao carrinho
-    $(document).on('click', '.add-to-cart', function () {
+    // Manipulador de clique para o botão de esfihas
+    $('#esfihasButton').on('click', function () {
+        // Verificar se a lista de esfihas já foi carregada
+        if ($('#esfihas-list').children().length === 0) {
+            loadEsfihasFromDB();
+        }
+    });
+
+    // Selecionar sabor para pizza meio a meio
+    $(document).on('click', '.select-flavor', function () {
         const id = $(this).closest('.pizza-item').data('id');
         const name = $(this).closest('.pizza-item').data('name');
         const price = $(this).closest('.pizza-item').data('price');
+
+        if (selectedFlavors.length < maxFlavors) {
+            selectedFlavors.push({ id, name, price });
+            $(this).text('Sabor Selecionado');
+        }
+
+        if (selectedFlavors.length === maxFlavors) {
+            addPizzaToCart();
+            resetFlavorSelection();
+        }
+    });
+
+    // Adicionar a pizza ao carrinho com sabores selecionados
+    function addPizzaToCart() {
+        const pizzaName = selectedFlavors.map(flavor => flavor.name).join(' / ');
+        const highestPrice = Math.max(...selectedFlavors.map(flavor => flavor.price));
+
+        cart.push({
+            id: `meio-a-meio-${Date.now()}`,
+            name: pizzaName,
+            price: highestPrice,
+            quantity: 1
+        });
+
+        updateCart();
+    }
+
+    // Resetar a seleção de sabores
+    function resetFlavorSelection() {
+        selectedFlavors = [];
+        $('.select-flavor').text('Selecionar Sabor');
+    }
+
+    // Adicionar ao carrinho
+    $(document).on('click', '.add-to-cart', function () {
+        const id = $(this).closest('.esfiha-item').data('id');
+        const name = $(this).closest('.esfiha-item').data('name');
+        const price = $(this).closest('.esfiha-item').data('price');
 
         const existingItem = cart.find(item => item.id === id);
         if (existingItem) {
@@ -113,7 +190,7 @@ $(document).ready(function () {
         const reference = $('#reference').val();
         const deliveryOption = $('#deliveryOption').val();
         const paymentMethod = $('#paymentMethod').val();
-        const observacoes = $('#observacoes').val();
+        const observacoes = $('#observacoes').val() || ''; // Garantir que observações não sejam undefined
         const finalTotal = parseFloat($('#final-total').text());
 
         let troco = null;
@@ -152,106 +229,29 @@ $(document).ready(function () {
             }))
         };
 
-        console.log('Enviando pedidoDTO:', pedidoDTO);
+        console.log('Enviando pedido:', pedidoDTO);
 
+        // Enviar pedido para o servidor
         $.ajax({
-            url: 'http://localhost:8081/delivery/pedidos/criar',
+            url: '/pedidos/criar',
             method: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(pedidoDTO),
-            success: function (response) {
-                console.log('Resposta do servidor:', response);
+            success: function () {
                 alert('Pedido realizado com sucesso!');
-                $('#checkoutModal').modal('hide');
-                cart = [];
-                updateCart();
-
-                // Verificar o dia da semana para calcular o tempo estimado de entrega
-                const currentDay = new Date().getDay(); // 0 é domingo, 1 é segunda, ..., 6 é sábado
-                let deliveryTimeRange;
-
-                if (currentDay >= 1 && currentDay <= 4) { // Segunda a quinta-feira
-                    deliveryTimeRange = "45 a 60 minutos";
-                } else { // Sexta a domingo
-                    deliveryTimeRange = "60 a 120 minutos";
-                }
-
-                // Mostrar a tela de tempo estimado de entrega
-                $('#delivery-time-modal .modal-body').text(`O tempo estimado de entrega é de ${deliveryTimeRange}.`);
-                $('#delivery-time-modal').modal('show');
+                $('#checkout-form')[0].reset();
+                $('#cart-items').empty();
+                $('#cart-total').text('0.00');
+                $('#final-total').text('0.00');
             },
             error: function (xhr, status, error) {
-                console.error('Erro ao realizar o pedido:', error);
-                console.log('Status:', status);
-                console.log('Resposta:', xhr.responseText);
-                alert('Ocorreu um erro ao realizar o pedido.');
+                console.error('Erro ao criar pedido:', error);
             }
         });
     });
 
-    // Mostrar campo de troco para pagamento em dinheiro
-    $('#paymentMethod').on('change', function () {
-        if ($(this).val() === 'dinheiro') {
-            $('#change-container').show();
-        } else {
-            $('#change-container').hide();
-            $('#change-output').hide();
-        }
+    // Atualizar o total final ao alterar opção de entrega
+    $('#deliveryOption').on('change', function () {
         updateFinalTotal();
-    });
-
-    // Atualizar o total final quando o carrinho for atualizado
-    $(document).on('click', '.add-to-cart, .remove-from-cart', function () {
-        updateFinalTotal();
-    });
-
-    // Fechar modais ao clicar fora deles
-    $(document).on('click', function (event) {
-        // Verifica se o clique foi fora do modal de pizzas
-        if (!$(event.target).closest('#pizza-modal').length && !$(event.target).closest('.open-pizza-modal').length) {
-            $('#pizza-modal').modal('hide');
-        }
-
-        // Verifica se o clique foi fora do modal de bebidas
-        if (!$(event.target).closest('#bebida-modal').length && !$(event.target).closest('.open-bebida-modal').length) {
-            $('#bebida-modal').modal('hide');
-        }
-
-        // Verifica se o clique foi fora do modal de esfiha
-        if (!$(event.target).closest('#esfiha-modal').length && !$(event.target).closest('.open-esfiha-modal').length) {
-            $('#esfiha-modal').modal('hide');
-        }
-
-        if (!$(event.target).closest('#cart-container, .add-to-cart, .pizza-item').length) {
-            // Fechar o carrinho se o clique não for dentro do carrinho ou em um botão de adicionar ao carrinho
-            $('#cart-container').hide();
-        }
-
-        if (!$(event.target).closest('#deliveryOption, #paymentMethod, #change-container').length) {
-            // Fechar as listas de opções de entrega e método de pagamento se o clique for fora delas
-            $('#deliveryOption').blur();
-            $('#paymentMethod').blur();
-            $('#change-container').hide();
-        }
-    });
-
-    // Mostrar o carrinho novamente quando for atualizado
-    $(document).on('click', '.add-to-cart', function () {
-        $('#cart-container').show();
-    });
-
-    // Exibir o modal de pizzas
-    $('.open-pizza-modal').on('click', function () {
-        $('#pizza-modal').modal('show');
-    });
-
-    // Exibir o modal de bebidas
-    $('.open-bebida-modal').on('click', function () {
-        $('#bebida-modal').modal('show');
-    });
-
-    // Exibir o modal de esfihas
-    $('.open-esfiha-modal').on('click', function () {
-        $('#esfiha-modal').modal('show');
     });
 });

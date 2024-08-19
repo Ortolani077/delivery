@@ -18,6 +18,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,7 +36,8 @@ public class User implements Serializable {
     private String telefone;
     private String senha;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<Pedido> pedidos = new ArrayList<>();
 
     @ManyToMany(cascade = CascadeType.ALL)
@@ -45,9 +48,12 @@ public class User implements Serializable {
     )
     private List<Endereco> enderecos = new ArrayList<>();
 
-    // Métodos adicionais
     public void addEndereco(Endereco endereco) {
         this.enderecos.add(endereco);
+    }
+
+    public void removeEndereco(Endereco endereco) {
+        this.enderecos.remove(endereco);
     }
 
 	public Long getId() {
@@ -105,6 +111,6 @@ public class User implements Serializable {
 	public void setEnderecos(List<Endereco> enderecos) {
 		this.enderecos = enderecos;
 	}
-
-   
+    
+    
 }
